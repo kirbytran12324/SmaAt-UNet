@@ -21,7 +21,7 @@ def get_train_valid_loader(
 ):
     """
     Utility function for loading and returning train and valid
-    multi-process iterators over the CIFAR-10 dataset. A sample
+    multiprocess iterators over the CIFAR-10 dataset. A sample
     9x9 grid of the images can be optionally displayed.
     If using CUDA, num_workers should be set to 1 and pin_memory to True.
     Params
@@ -148,7 +148,7 @@ def get_test_loader(
     pin_memory=False,
 ):
     """
-    Utility function for loading and returning a multi-process
+    Utility function for loading and returning a multiprocess
     test iterator over the CIFAR-10 dataset.
     If using CUDA, num_workers should be set to 1 and pin_memory to True.
     Params
@@ -204,8 +204,8 @@ def get_test_loader(
 
 
 if __name__ == "__main__":
-    folder = "C:/Users/hans-/Documents/weather_prediction/data/precipitation/"
-    data = "RAD_NL25_RAC_5min_train_test_2016-2019.h5"
+    folder = "../dataset/composed/"
+    data = "train_test_2019-2020_input-length_12_img-ahead_6_rain-threshold_0.h5"
     train_dl, valid_dl = get_train_valid_loader(
         folder + data,
         batch_size=8,

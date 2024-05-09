@@ -8,9 +8,9 @@ from root import ROOT_DIR
 def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: float):
     """Create a dataset that has target images containing at least `rain_amount_thresh` (percent) of rain."""
 
-    precipitation_folder = ROOT_DIR / "data" / "precipitation"
+    precipitation_folder = ROOT_DIR / "dataset"
     with h5py.File(
-        precipitation_folder / "RAD_NL25_RAC_5min_train_test_2016-2019.h5",
+        precipitation_folder / "test.h5",
         "r",
     ) as orig_f:
         train_images = orig_f["train"]["images"]
@@ -23,7 +23,7 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
         num_pixels = imgSize * imgSize
 
         filename = (
-            precipitation_folder / f"train_test_2016-2019_input-length_{input_length}_img-"
+            precipitation_folder / f"train_test_2019-2020_input-length_{input_length}_img-"
             f"ahead_{image_ahead}_rain-threshold_{int(rain_amount_thresh * 100)}.h5"
         )
 
@@ -32,8 +32,8 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
             test_set = f.create_group("test")
             train_image_dataset = train_set.create_dataset(
                 "images",
-                shape=(1, input_length + image_ahead, imgSize, imgSize),
-                maxshape=(None, input_length + image_ahead, imgSize, imgSize),
+                shape=(1, input_length + image_ahead, 90, 250),  # Change this line
+                maxshape=(None, input_length + image_ahead, 90, 250),  # And this line
                 dtype="float32",
                 compression="gzip",
                 compression_opts=9,
@@ -48,8 +48,8 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
             )
             test_image_dataset = test_set.create_dataset(
                 "images",
-                shape=(1, input_length + image_ahead, imgSize, imgSize),
-                maxshape=(None, input_length + image_ahead, imgSize, imgSize),
+                shape=(1, input_length + image_ahead, 90, 250),  # Change this line
+                maxshape=(None, input_length + image_ahead, 90, 250),  # And this line
                 dtype="float32",
                 compression="gzip",
                 compression_opts=9,
@@ -85,11 +85,18 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
                             image_dataset.resize(image_dataset.shape[0] + 1, axis=0)
                             timestamp_dataset.resize(timestamp_dataset.shape[0] + 1, axis=0)
                         image_dataset[-1] = imgs
-                        timestamp_dataset[-1] = timestamps_img
+                        timestamp_dataset[-1] = np.reshape(timestamps_img, (18, 1))
 
 
 if __name__ == "__main__":
+    print("Creating dataset with all of the images")
+    create_dataset(input_length=12, image_ahead=6, rain_amount_thresh=0.0)
+    print("Creating dataset with at least 5% of rain pixel in target image")
+    create_dataset(input_length=12, image_ahead=6, rain_amount_thresh=0.05)
+    print("Creating dataset with at least 10% of rain pixel in target image")
+    create_dataset(input_length=12, image_ahead=6, rain_amount_thresh=0.1)
     print("Creating dataset with at least 20% of rain pixel in target image")
     create_dataset(input_length=12, image_ahead=6, rain_amount_thresh=0.2)
     print("Creating dataset with at least 50% of rain pixel in target image")
     create_dataset(input_length=12, image_ahead=6, rain_amount_thresh=0.5)
+

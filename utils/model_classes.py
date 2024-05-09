@@ -3,7 +3,19 @@ import lightning.pytorch as pl
 
 
 def get_model_class(model_file) -> tuple[type[pl.LightningModule], str]:
-    # This is for some nice plotting
+    """
+        This function takes a string representing a model file and returns a tuple containing
+        the corresponding model class and a string representing the model's name.
+
+        Parameters:
+        model_file (str): A string representing the model file.
+
+        Returns:
+        tuple[type[pl.LightningModule], str]: A tuple containing the model class and the model's name.
+
+        Raises:
+        NotImplementedError: If the model name is not found in the model_file string.
+    """
     if "UNet_Attention" in model_file:
         model_name = "UNet Attention"
         model = unet_regr.UNet_Attention

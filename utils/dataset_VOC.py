@@ -46,7 +46,7 @@ def decode_segmap(label_mask, plot=False):
     Args:
         label_mask (np.ndarray): an (M,N) array of integer values denoting
           the class label at each spatial location.
-        plot (bool, optional): whether to show the resulting color image
+        Plot (bool, optional): whether to show the resulting color image
           in a figure.
     Returns:
         (np.ndarray, optional): the resulting decoded color image.

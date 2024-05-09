@@ -5,14 +5,21 @@ from models.layers import CBAM
 
 
 class SmaAt_UNet(nn.Module):
+    """
+    U-Net model with depthwise separable convolutions and Convolutional Block Attention Modules (CBAMs) for semantic segmentation tasks.
+    """
+
     def __init__(
-        self,
-        n_channels,
-        n_classes,
-        kernels_per_layer=2,
-        bilinear=True,
-        reduction_ratio=16,
+            self,
+            n_channels,
+            n_classes,
+            kernels_per_layer=2,
+            bilinear=True,
+            reduction_ratio=16,
     ):
+        """
+        Initialize the U-Net model with depthwise separable convolutions and CBAMs with the given hyperparameters.
+        """
         super().__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
@@ -39,6 +46,11 @@ class SmaAt_UNet(nn.Module):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
+        """
+        Forward pass of the U-Net model with depthwise separable convolutions and CBAMs.
+        """
+        # Reshape the input tensor to have 4 dimensions
+        x = x.view(x.size(0), -1, x.size(3), x.size(4))
         x1 = self.inc(x)
         x1Att = self.cbam1(x1)
         x2 = self.down1(x1)

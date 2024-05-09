@@ -6,8 +6,9 @@ from utils import dataset_precip
 import argparse
 import numpy as np
 
-
+# Base class for U-Net models
 class UNet_base(pl.LightningModule):
+    # Method to add model-specific arguments
     @staticmethod
     def add_model_specific_args(parent_parser):
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
@@ -25,13 +26,16 @@ class UNet_base(pl.LightningModule):
         parser.add_argument("--lr_patience", type=int, default=5)
         return parser
 
+    # Constructor for the class
     def __init__(self, hparams):
         super().__init__()
         self.save_hyperparameters(hparams)
 
+    # Forward pass of the model
     def forward(self, x):
         pass
 
+    # Method to configure the optimizer
     def configure_optimizers(self):
         opt = optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
         scheduler = {
@@ -42,10 +46,12 @@ class UNet_base(pl.LightningModule):
         }
         return [opt], [scheduler]
 
+    # Loss function for the model
     def loss_func(self, y_pred, y_true):
         # reduction="mean" is average of every pixel, but I want average of image
         return nn.functional.mse_loss(y_pred, y_true, reduction="sum") / y_true.size(0)
 
+    # Training step for the model
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_pred = self(x)
@@ -55,12 +61,14 @@ class UNet_base(pl.LightningModule):
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
+    # Validation step for the model
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_pred = self(x)
         loss = self.loss_func(y_pred.squeeze(), y)
         self.log("val_loss", loss, prog_bar=True)
 
+    # Test step for the model
     def test_step(self, batch, batch_idx):
         """Calculate the loss (MSE per default) on the test set normalized and denormalized."""
         x, y = batch
@@ -72,7 +80,9 @@ class UNet_base(pl.LightningModule):
         self.log("MSE_denormalized", loss_denorm)
 
 
+# Base class for precipitation regression models
 class Precip_regression_base(UNet_base):
+    # Method to add model-specific arguments
     @staticmethod
     def add_model_specific_args(parent_parser):
         parent_parser = UNet_base.add_model_specific_args(parent_parser)
@@ -85,6 +95,7 @@ class Precip_regression_base(UNet_base):
         parser.n_classes = 1
         return parser
 
+    # Constructor for the class
     def __init__(self, hparams):
         super().__init__(hparams=hparams)
         self.train_dataset = None
@@ -92,6 +103,7 @@ class Precip_regression_base(UNet_base):
         self.train_sampler = None
         self.valid_sampler = None
 
+    # Method to prepare the data
     def prepare_data(self):
         # train_transform = transforms.Compose([
         #     transforms.RandomHorizontalFlip()]
@@ -128,6 +140,7 @@ class Precip_regression_base(UNet_base):
         self.train_sampler = SubsetRandomSampler(train_idx)
         self.valid_sampler = SubsetRandomSampler(valid_idx)
 
+    # Method to create the training data loader
     def train_dataloader(self):
         train_loader = DataLoader(
             self.train_dataset,
@@ -140,6 +153,7 @@ class Precip_regression_base(UNet_base):
         )
         return train_loader
 
+    # Method to create the validation data loader
     def val_dataloader(self):
         valid_loader = DataLoader(
             self.valid_dataset,

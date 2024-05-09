@@ -25,13 +25,14 @@ class precipitation_maps_h5(Dataset):
         # min_feature_range = 0.0
         # max_feature_range = 1.0
         # with h5py.File(self.file_name, 'r') as dataFile:
-        #     dataset = dataFile["train" if self.train else "test"]['images'][index:index+self.sequence_length]
+        #     dataset = dataFile["train"
+        #     if self.train else "test"]['images'][index: index+self.sequence_length]
         # load the file here (load as singleton)
         if self.dataset is None:
-            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024**3)["train" if self.train else "test"][
+            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024 ** 3)["train" if self.train else "test"][
                 "images"
             ]
-        imgs = np.array(self.dataset[index : index + self.sequence_length], dtype="float32")
+        imgs = np.array(self.dataset[index: index + self.sequence_length], dtype="float32")
 
         # add transforms
         if self.transform is not None:
@@ -63,7 +64,7 @@ class precipitation_maps_oversampled_h5(Dataset):
     def __getitem__(self, index):
         # load the file here (load as singleton)
         if self.dataset is None:
-            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024**3)["train" if self.train else "test"][
+            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024 ** 3)["train" if self.train else "test"][
                 "images"
             ]
         imgs = np.array(self.dataset[index], dtype="float32")
@@ -85,7 +86,8 @@ class precipitation_maps_classification_h5(Dataset):
         super().__init__()
 
         self.file_name = in_file
-        self.n_images, self.nx, self.ny = h5py.File(self.file_name, "r")["train" if train else "test"]["images"].shape
+        self.n_images, self.n_channels, self.nx, self.ny = h5py.File(self.file_name, "r")["train" if train else "test"][
+            "images"].shape
 
         self.num_input = num_input_images
         self.img_to_predict = img_to_predict
@@ -103,13 +105,14 @@ class precipitation_maps_classification_h5(Dataset):
         # min_feature_range = 0.0
         # max_feature_range = 1.0
         # with h5py.File(self.file_name, 'r') as dataFile:
-        #     dataset = dataFile["train" if self.train else "test"]['images'][index:index+self.sequence_length]
+        #     dataset = dataFile["train"
+        #     if self.train else "test"]['images'][index: index+self.sequence_length]
         # load the file here (load as singleton)
         if self.dataset is None:
-            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024**3)["train" if self.train else "test"][
+            self.dataset = h5py.File(self.file_name, "r", rdcc_nbytes=1024 ** 3)["train" if self.train else "test"][
                 "images"
             ]
-        imgs = np.array(self.dataset[index : index + self.sequence_length], dtype="float32")
+        imgs = np.array(self.dataset[index: index + self.sequence_length], dtype="float32")
 
         # add transforms
         if self.transform is not None:
@@ -117,8 +120,11 @@ class precipitation_maps_classification_h5(Dataset):
         input_img = imgs[: self.num_input]
         # put the img in buckets
         target_img = imgs[-1]
-        # target_img is normalized by dividing through the highest value of the training set. We reverse this.
-        # Then target_img is in mm/5min. The bins have the unit mm/hour. Therefore we multiply the img by 12
+        # Target_img is normalized by dividing through the highest value of the training set.
+        # We reverse this.
+        # Then target_img is in mm/5min.
+        # The bins have the unit mm/hour.
+        # Therefore, we multiply the img by 12
         buckets = np.digitize(target_img * 47.83 * 12, self.bins, right=True)
 
         return input_img, buckets

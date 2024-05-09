@@ -13,7 +13,7 @@ class IoU(metric.Metric):
         IoU = true_positive / (true_positive + false_positive + false_negative).
     Keyword arguments:
     - num_classes (int): number of classes in the classification problem
-    - normalized (boolean, optional): Determines whether or not the confusion
+    - normalized (boolean, optional): Determines whether the confusion
     matrix is normalized or not. Default: False.
     - ignore_index (int or iterable, optional): Index of the classes to ignore
     when computing the IoU. Can be an int, or any iterable of ints.
