@@ -5,11 +5,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from models.layers import DepthwiseSeparableConv
 
+
 class DoubleConvDS(nn.Module):
     """
     A module that performs two consecutive depthwise separable convolution operations, 
     each followed by batch normalization and a ReLU activation function.
     """
+
     def __init__(self, in_channels, out_channels, mid_channels=None, kernels_per_layer=1):
         super().__init__()
         if not mid_channels:
@@ -46,6 +48,7 @@ class DownDS(nn.Module):
     """
     A module that performs downscaling with maxpool then double conv.
     """
+
     def __init__(self, in_channels, out_channels, kernels_per_layer=1):
         super().__init__()
         self.maxpool_conv = nn.Sequential(
@@ -64,6 +67,7 @@ class UpDS(nn.Module):
     """
     A module that performs upscaling then double conv.
     """
+
     def __init__(self, in_channels, out_channels, bilinear=True, kernels_per_layer=1):
         super().__init__()
 
@@ -101,6 +105,7 @@ class OutConv(nn.Module):
     """
     A module that performs a simple convolution operation with a kernel size of 1.
     """
+
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1)

@@ -45,7 +45,7 @@ def train_regression(hparams, find_batch_size_automatically: bool = False):
     earlystopping_callback = EarlyStopping(
         monitor="val_loss",
         mode="min",
-        patience=hparams.es_patience,
+        patience=hparams.lr_patience,
     )
     # Create a Trainer instance with the specified hyperparameters and callbacks
     trainer = pl.Trainer(
@@ -59,7 +59,8 @@ def train_regression(hparams, find_batch_size_automatically: bool = False):
         val_check_interval=hparams.val_check_interval,
     )
 
-    # If find_batch_size_automatically parameter is True, use the Tuner class from PyTorch Lightning to automatically find the optimal batch size
+    # If find_batch_size_automatically parameter is True, use the Tuner class from PyTorch Lightning to automatically
+    # find the optimal batch size
     if find_batch_size_automatically:
         tuner = Tuner(trainer)
 
@@ -78,12 +79,12 @@ if __name__ == "__main__":
     # Set up several arguments such as --dataset_folder, --batch_size, --learning_rate, and --epochs
     parser.add_argument(
         "--dataset_folder",
-        default= ROOT_DIR / "data" / "composed" / "train_test_2019-2020_input-length_12_img-ahead_6_rain-threshold_0.h5",
+        default=ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_0.h5",
         type=str,
     )
-    parser.add_argument("--batch_size", type=int, default=16)
-    parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--epochs", type=int, default=200)
+    parser.add_argument("--batch_size", type=int, default=12)
+    parser.add_argument("--learning_rate", type=float, default=0.01)
+    parser.add_argument("--epochs", type=int, default=150)
     parser.add_argument("--fast_dev_run", type=bool, default=False)
     parser.add_argument("--resume_from_checkpoint", type=str, default=None)
     parser.add_argument("--val_check_interval", type=float, default=None)
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # All the models below will be trained
-    for m in ["UNet", "UNetDS", "UNet_Attention", "UNetDS_Attention"]:
+    for m in ["UNetDS_Attention"]:
         args.model = m
         print(f"Start training model: {m}")
         train_regression(args, find_batch_size_automatically=False)

@@ -3,10 +3,12 @@ from models.unet_parts_depthwise_separable import DoubleConvDS, UpDS, DownDS
 from models.layers import CBAM
 from models.regression_lightning import Precip_regression_base
 
+
 class UNet(Precip_regression_base):
     """
     Standard U-Net model for semantic segmentation tasks.
     """
+
     def __init__(self, hparams):
         """
         Initialize the U-Net model with the given hyperparameters.
@@ -50,6 +52,7 @@ class UNet_Attention(Precip_regression_base):
     """
     U-Net model with Convolutional Block Attention Modules (CBAMs) for semantic segmentation tasks.
     """
+
     def __init__(self, hparams):
         """
         Initialize the U-Net model with CBAMs with the given hyperparameters.
@@ -104,6 +107,7 @@ class UNetDS(Precip_regression_base):
     """
     U-Net model with depthwise separable convolutions for semantic segmentation tasks.
     """
+
     def __init__(self, hparams):
         """
         Initialize the U-Net model with depthwise separable convolutions with the given hyperparameters.
@@ -146,8 +150,10 @@ class UNetDS(Precip_regression_base):
 
 class UNetDS_Attention(Precip_regression_base):
     """
-    U-Net model with depthwise separable convolutions and Convolutional Block Attention Modules (CBAMs) for semantic segmentation tasks.
+    U-Net model with depthwise separable convolutions and Convolutional Block Attention Modules (CBAMs) for semantic
+    segmentation tasks.
     """
+
     def __init__(self, hparams):
         """
         Initialize the U-Net model with depthwise separable convolutions and CBAMs with the given hyperparameters.
@@ -201,8 +207,10 @@ class UNetDS_Attention(Precip_regression_base):
 
 class UNetDS_Attention_4CBAMs(Precip_regression_base):
     """
-    U-Net model with depthwise separable convolutions and four Convolutional Block Attention Modules (CBAMs) for semantic segmentation tasks.
+    U-Net model with depthwise separable convolutions and four Convolutional Block Attention Modules (CBAMs) for
+    semantic segmentation tasks.
     """
+
     def __init__(self, hparams):
         """
         Initialize the U-Net model with depthwise separable convolutions and four CBAMs with the given hyperparameters.

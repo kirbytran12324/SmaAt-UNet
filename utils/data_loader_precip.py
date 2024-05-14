@@ -7,21 +7,22 @@ from utils import dataset_precip
 
 # Taken from: https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
 def get_train_valid_loader(
-    data_dir,
-    batch_size,
-    random_seed,
-    num_input_images,
-    num_output_images,
-    augment,
-    classification,
-    valid_size=0.1,
-    shuffle=True,
-    num_workers=4,
-    pin_memory=False,
+        data_dir,
+        batch_size,
+        random_seed,
+        num_input_images,
+        num_output_images,
+        augment,
+        classification,
+        is_train=True,
+        shuffle=True,
+        valid_size=0.1,
+        num_workers=4,
+        pin_memory=False,
 ):
     """
     Utility function for loading and returning train and valid
-    multiprocess iterators over the CIFAR-10 dataset. A sample
+    multi-process iterators over the CIFAR-10 dataset. A sample
     9x9 grid of the images can be optionally displayed.
     If using CUDA, num_workers should be set to 1 and pin_memory to True.
     Params
@@ -78,7 +79,7 @@ def get_train_valid_loader(
             in_file=data_dir,
             num_input_images=num_input_images,
             img_to_predict=num_output_images,
-            train=True,
+
             transform=train_transform,
         )
 
@@ -86,7 +87,7 @@ def get_train_valid_loader(
             in_file=data_dir,
             num_input_images=num_input_images,
             img_to_predict=num_output_images,
-            train=True,
+            train=not is_train,
             transform=valid_transform,
         )
     else:
@@ -95,7 +96,7 @@ def get_train_valid_loader(
             in_file=data_dir,
             num_input_images=num_input_images,
             num_output_images=num_output_images,
-            train=True,
+            train=is_train,
             transform=train_transform,
         )
 
@@ -103,7 +104,7 @@ def get_train_valid_loader(
             in_file=data_dir,
             num_input_images=num_input_images,
             num_output_images=num_output_images,
-            train=True,
+            train=not is_train,
             transform=valid_transform,
         )
 
@@ -122,6 +123,7 @@ def get_train_valid_loader(
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=batch_size,
+        shuffle=False,
         sampler=train_sampler,
         num_workers=num_workers,
         pin_memory=pin_memory,
@@ -129,6 +131,7 @@ def get_train_valid_loader(
     valid_loader = torch.utils.data.DataLoader(
         valid_dataset,
         batch_size=batch_size,
+        shuffle=False,
         sampler=valid_sampler,
         num_workers=num_workers,
         pin_memory=pin_memory,
@@ -138,17 +141,17 @@ def get_train_valid_loader(
 
 
 def get_test_loader(
-    data_dir,
-    batch_size,
-    num_input_images,
-    num_output_images,
-    classification,
-    shuffle=False,
-    num_workers=4,
-    pin_memory=False,
+        data_dir,
+        batch_size,
+        num_input_images,
+        num_output_images,
+        classification,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=False,
 ):
     """
-    Utility function for loading and returning a multiprocess
+    Utility function for loading and returning a multi-process
     test iterator over the CIFAR-10 dataset.
     If using CUDA, num_workers should be set to 1 and pin_memory to True.
     Params
@@ -204,8 +207,8 @@ def get_test_loader(
 
 
 if __name__ == "__main__":
-    folder = "../dataset/composed/"
-    data = "train_test_2019-2020_input-length_12_img-ahead_6_rain-threshold_0.h5"
+    folder = "../dataset/"
+    data = "train_test_input-length_12_image-ahead_6_rain-threshold_0.h5"
     train_dl, valid_dl = get_train_valid_loader(
         folder + data,
         batch_size=8,

@@ -3,13 +3,14 @@ from torch import nn
 
 from root import ROOT_DIR
 from utils import dataset_precip, model_classes
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 import os
 import numpy as np
 import json
 
 
-def get_metrics_from_model(model, test_dl, threshold=0.5, device: str = "cpu"):
+def get_metrics_from_model(model, test_dl, threshold=0.05, device: str = "cpu"):
     device = torch.device(device)
     # Precision = tp/(tp+fp)
     # Recall = tp/(tp+fn)
@@ -77,12 +78,11 @@ def get_metrics_from_model(model, test_dl, threshold=0.5, device: str = "cpu"):
     )
 
 
-def calculate_metrics_for_models(model_folder, threshold: float = 0.5):
+def calculate_metrics_for_models(model_folder, threshold: float = 0.05):
     dataset = dataset_precip.precipitation_maps_oversampled_h5(
         in_file=ROOT_DIR
-        / "data"
-        / "precipitation"
-        / f"train_test_2016-2019_input-length_12_img-ahead_6_rain-threshold_{int(threshold*100)}.h5",
+        / "dataset"
+        / f"train_test_rain-threshold_{int(threshold*100)}.h5",
         num_input_images=12,
         num_output_images=6,
         train=False,
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     load_metrics = False
 
     model_folder = ROOT_DIR / "checkpoints" / "comparison"
-    threshold = 0.5
+    threshold = 0.05
 
     test_metrics_file = model_folder / f"model_metrics_{threshold}mmh.txt"
     if load_metrics:

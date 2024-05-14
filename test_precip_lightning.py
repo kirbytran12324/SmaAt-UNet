@@ -9,7 +9,7 @@ from tqdm import tqdm
 import lightning.pytorch as pl
 
 from root import ROOT_DIR
-from utils import dataset_precip, model_classes
+from utils import dataset_precip, model_classes, data_loader_precip
 
 
 def get_model_loss(model, test_dl, loss="mse", denormalize=True):
@@ -52,8 +52,7 @@ def get_persistence_metrics(test_dl, denormalize=True):
         loss += loss_func(y_pred.squeeze(), y_true, reduction="sum") / y_true.size(0)
         loss_denorm += loss_func(y_pred.squeeze() * factor, y_true * factor, reduction="sum") / y_true.size(0)
         # denormalize and convert from mm/5min to mm/h
-        y_pred_adj = y_pred.squeeze() * 47.83 * 12
-        y_true_adj = y_true.squeeze() * 47.83 * 12
+        y_pred_adj = y_pred.squeeze() * 47.83
         # convert to masks for comparison
         y_pred_mask = y_pred_adj > threshold
         y_true_mask = y_true_adj > threshold
@@ -134,7 +133,7 @@ if __name__ == "__main__":
     # Models that are compared should be in this folder (the ones with the lowest validation error)
     model_folder = ROOT_DIR / "checkpoints" / "comparison"
     data_file = (
-        ROOT_DIR / "data" / "precipitation" / "train_test_2016-2019_input-length_12_img-ahead_6_rain-threshold_50.h5"
+        ROOT_DIR / "data" / "train_test_rain-threshold_0.h5"
     )
 
     # This changes whether to load or to run the model loss calculation

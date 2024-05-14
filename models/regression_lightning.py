@@ -6,6 +6,7 @@ from utils import dataset_precip
 import argparse
 import numpy as np
 
+
 # Base class for U-Net models
 class UNet_base(pl.LightningModule):
     # Method to add model-specific arguments
@@ -48,8 +49,11 @@ class UNet_base(pl.LightningModule):
 
     # Loss function for the model
     def loss_func(self, y_pred, y_true):
+        y_true = y_true.squeeze()
         # reduction="mean" is average of every pixel, but I want average of image
-        return nn.functional.mse_loss(y_pred, y_true, reduction="sum") / y_true.size(0)
+        loss = nn.functional.mse_loss(y_pred, y_true, reduction="sum") / y_true.size(0)
+        loss = loss.squeeze()
+        return loss
 
     # Training step for the model
     def training_step(self, batch, batch_idx):
@@ -148,7 +152,7 @@ class Precip_regression_base(UNet_base):
             sampler=self.train_sampler,
             pin_memory=True,
             # The following can/should be tweaked depending on the number of CPU cores
-            num_workers=1,
+            num_workers=4,
             persistent_workers=True,
         )
         return train_loader
@@ -161,7 +165,7 @@ class Precip_regression_base(UNet_base):
             sampler=self.valid_sampler,
             pin_memory=True,
             # The following can/should be tweaked depending on the number of CPU cores
-            num_workers=1,
+            num_workers=4,
             persistent_workers=True,
         )
         return valid_loader

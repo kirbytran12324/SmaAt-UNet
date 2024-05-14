@@ -5,10 +5,17 @@ import random
 from datetime import datetime
 
 # Directory containing the TIFF files
-tiff_dir = '../dataset'
+tiff_dir = '../dataset/'
 
 # Output HDF5 file
-hdf5_file = '../dataset/composed/test.h5'
+hdf5_file = '../dataset/demo.h5'
+
+
+def crop_center(img, cropx, cropy):
+    y, x = img.shape
+    startx = x//2 - cropx//2
+    starty = y//2 - cropy//2
+    return img[starty:starty+cropy, startx:startx+cropx]
 
 
 def load_tiff_files(directory):
@@ -22,13 +29,20 @@ def load_tiff_files(directory):
                     # Load the image
                     img = tifffile.imread(os.path.join(root, file))
 
+                    # Crop the image to 240x80
+                    img = crop_center(img, 240, 80)
                     # Extract the timestamp from the filename
-                    timestamp_str = file[6:-4]
-                    timestamp = datetime.strptime(timestamp_str, "%Y%m%d%H%M%S")
+                    timestamp_str = file[6:-4]  # Adjust these indices to match your filenames
+                    try:
+                        timestamp = datetime.strptime(timestamp_str, "%Y%m%d%H%M%S")
+                        timestamp = timestamp.timestamp()  # Correct way to get epoch time
 
-                    # Store the image in the dictionary with the timestamp as the key
-                    images[timestamp] = img
-                    timestamps.append(timestamp)
+                        # Store the image in the dictionary with the timestamp as the key
+                        images[timestamp] = img
+                        timestamps.append(timestamp)
+                    except ValueError:
+                        print(f"Skipping file {file} due to invalid timestamp")
+                        continue
 
         for root, dirs, _ in os.walk(directory):
             for d in dirs:
@@ -40,14 +54,17 @@ def load_tiff_files(directory):
 
 def save_to_hdf5(group_name, images, timestamps):
     with h5py.File(hdf5_file, 'a') as hf:
-        group = hf.create_group(group_name)
+        if group_name in hf:
+            group = hf[group_name]
+        else:
+            group = hf.create_group(group_name)
         group.create_dataset('images', data=images)
         group.create_dataset('timestamps', data=timestamps)
 
 
 def process_directory(directory):
     # Load TIFF images and timestamps
-    images, timestamps = load_tiff_files(directory)
+    images, timestamps= load_tiff_files(directory)
 
     # Initialize lists to hold training and testing data
     train_images, train_timestamps = [], []
@@ -58,21 +75,23 @@ def process_directory(directory):
 
     # Iterate over images and timestamps
     for img, timestamp in zip(images, timestamps):
-        # If the image is from October
-        if timestamp.month == 10:
+        # Convert epoch time back to datetime object
+        timestamp_dt = datetime.fromtimestamp(timestamp)
+        #If the image is from October
+        if timestamp_dt.month == 10:
             # If the day of the month is one of the randomly selected days
-            if timestamp.day in random_days:
+            if timestamp_dt.day in random_days:
                 # Add to testing set
                 test_images.append(img)
-                test_timestamps.append(timestamp.strftime("%Y/%m/%d, %H:%M:%S"))
+                test_timestamps.append(timestamp)
             else:
                 # Otherwise, add to training set
                 train_images.append(img)
-                train_timestamps.append(timestamp.strftime("%Y/%m/%d, %H:%M:%S"))
+                train_timestamps.append(timestamp)
         else:
             # If the image is not from October, add to training set
             train_images.append(img)
-            train_timestamps.append(timestamp.strftime("%Y/%m/%d, %H:%M:%S"))
+            train_timestamps.append(timestamp)
 
     # Save training and testing sets in HDF5 file
     save_to_hdf5('train', train_images, train_timestamps)
