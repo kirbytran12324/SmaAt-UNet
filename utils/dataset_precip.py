@@ -90,7 +90,7 @@ class precipitation_maps_classification_h5(Dataset):
         self.num_input = num_input_images
         self.img_to_predict = img_to_predict
         self.sequence_length = num_input_images + img_to_predict
-        self.bins = np.array([0.0, 0.5, 1, 2, 5, 10, 30])
+        self.bins = np.array([0.0, 0.5, 1, 2, 5, 10, 30, 50, 100, 150, 200])
 
         self.train = train
         self.size_dataset = self.n_samples
@@ -110,7 +110,7 @@ class precipitation_maps_classification_h5(Dataset):
             ]
         imgs = np.array(self.dataset[index: index + self.sequence_length], dtype="float32")
 
-        # add transforms
+        #add transforms
         if self.transform is not None:
             imgs = self.transform(imgs)
         input_img = imgs[: self.num_input]
@@ -118,10 +118,7 @@ class precipitation_maps_classification_h5(Dataset):
         target_img = imgs[-1]
         # target_img is normalized by dividing through the highest value of the training set.
         # We reverse this.
-        # Then target_img is in mm/5min.
-        # The bins have the unit mm/hour.
-        # Therefore, we multiply the img by 12
-        buckets = np.digitize(target_img * 47.83, self.bins, right=True)
+        buckets = np.digitize(target_img * 260.0, self.bins, right=True)
 
         return input_img, buckets
 

@@ -30,16 +30,13 @@ def get_metrics_from_model(model, test_dl, threshold=0.05, device: str = "cpu"):
             y_true = y_true.to(device)
             y_pred = model(x)
             # denormalize
-            y_pred_adj = y_pred.squeeze() * 47.83
-            y_true_adj = y_true.squeeze() * 47.83
+            y_pred_adj = y_pred.squeeze() * 260.0
+            y_true_adj = y_true.squeeze() * 260.0
 
             # calc loss
             loss += loss_func(y_pred.squeeze(), y_true.squeeze(), reduction="sum")
             loss_denorm += loss_func(y_pred_adj, y_true_adj, reduction="sum")
 
-            # convert from mm/5min to mm/h
-            y_pred_adj *= 12
-            y_true_adj *= 12
             # convert to masks for comparison
             y_pred_mask = y_pred_adj > threshold
             y_true_mask = y_true_adj > threshold
@@ -78,11 +75,11 @@ def get_metrics_from_model(model, test_dl, threshold=0.05, device: str = "cpu"):
     )
 
 
-def calculate_metrics_for_models(model_folder, threshold: float = 0.05):
+def calculate_metrics_for_models(model_folder, threshold: float = 0.00):
     dataset = dataset_precip.precipitation_maps_oversampled_h5(
         in_file=ROOT_DIR
         / "dataset"
-        / f"train_test_rain-threshold_{int(threshold*100)}.h5",
+        / f"train_test_input-length_12_image-ahead_6_rain-threshold_0.h5",
         num_input_images=12,
         num_output_images=6,
         train=False,
@@ -130,7 +127,7 @@ if __name__ == "__main__":
     load_metrics = False
 
     model_folder = ROOT_DIR / "checkpoints" / "comparison"
-    threshold = 0.05
+    threshold = 0.00
 
     test_metrics_file = model_folder / f"model_metrics_{threshold}mmh.txt"
     if load_metrics:

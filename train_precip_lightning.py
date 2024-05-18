@@ -83,13 +83,29 @@ if __name__ == "__main__":
         type=str,
     )
     parser.add_argument("--batch_size", type=int, default=12)
-    parser.add_argument("--learning_rate", type=float, default=0.01)
-    parser.add_argument("--epochs", type=int, default=150)
+    parser.add_argument("--learning_rate", type=float, default=0.001)
+    parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--fast_dev_run", type=bool, default=False)
     parser.add_argument("--resume_from_checkpoint", type=str, default=None)
     parser.add_argument("--val_check_interval", type=float, default=None)
 
     args = parser.parse_args()
+
+    # args.fast_dev_run = True
+    args.n_channels = 12
+    # args.gpus = 1
+    args.model = "UNetDS_Attention"
+    args.lr_patience = 4
+    args.es_patience = 15
+    # args.val_check_interval = 0.25
+    args.kernels_per_layer = 2
+    args.use_oversampled_dataset = True
+    args.dataset_folder = (
+            ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_0.h5"
+    )
+    # args.resume_from_checkpoint = f"lightning/precip_regression/{args.model}/UNetDS_Attention.ckpt"
+
+    # train_regression(args, find_batch_size_automatically=False)
 
     # All the models below will be trained
     for m in ["UNetDS_Attention"]:

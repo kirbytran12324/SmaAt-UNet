@@ -3,19 +3,33 @@ import h5py
 import os
 import random
 from datetime import datetime
+import numpy as np
 
 # Directory containing the TIFF files
 tiff_dir = '../dataset/'
 
 # Output HDF5 file
-hdf5_file = '../dataset/demo.h5'
+hdf5_file = '../dataset/normalized.h5'
 
 
 def crop_center(img, cropx, cropy):
     y, x = img.shape
-    startx = x//2 - cropx//2
-    starty = y//2 - cropy//2
-    return img[starty:starty+cropy, startx:startx+cropx]
+    startx = x // 2 - cropx // 2
+    starty = y // 2 - cropy // 2
+    return img[starty:starty + cropy, startx:startx + cropx]
+
+
+def replace_inf_with_finite_image(image):
+    """Replace -inf values with the minimum finite value in the image."""
+    min_finite = np.min(image[np.isfinite(image)])
+    image[np.isneginf(image)] = min_finite
+    return image
+
+def normalize_image(image):
+    """Divide all finite values in the image by 260.0."""
+    finite_mask = np.isfinite(image)
+    image[finite_mask] /= 260.0
+    return image
 
 
 def load_tiff_files(directory):
@@ -29,8 +43,15 @@ def load_tiff_files(directory):
                     # Load the image
                     img = tifffile.imread(os.path.join(root, file))
 
+                    # Replace -inf values
+                    img = replace_inf_with_finite_image(img)
+
                     # Crop the image to 240x80
                     img = crop_center(img, 240, 80)
+
+                    # Normalize finite values
+                    img = normalize_image(img)
+
                     # Extract the timestamp from the filename
                     timestamp_str = file[6:-4]  # Adjust these indices to match your filenames
                     try:
@@ -64,7 +85,7 @@ def save_to_hdf5(group_name, images, timestamps):
 
 def process_directory(directory):
     # Load TIFF images and timestamps
-    images, timestamps= load_tiff_files(directory)
+    images, timestamps = load_tiff_files(directory)
 
     # Initialize lists to hold training and testing data
     train_images, train_timestamps = [], []
@@ -77,7 +98,7 @@ def process_directory(directory):
     for img, timestamp in zip(images, timestamps):
         # Convert epoch time back to datetime object
         timestamp_dt = datetime.fromtimestamp(timestamp)
-        #If the image is from October
+        # If the image is from October
         if timestamp_dt.month == 10:
             # If the day of the month is one of the randomly selected days
             if timestamp_dt.day in random_days:

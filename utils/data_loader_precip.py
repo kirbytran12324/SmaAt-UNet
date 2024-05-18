@@ -17,8 +17,8 @@ def get_train_valid_loader(
         is_train=True,
         shuffle=True,
         valid_size=0.1,
-        num_workers=4,
-        pin_memory=False,
+        num_workers=1,
+        pin_memory=True,
 ):
     """
     Utility function for loading and returning train and valid

@@ -10,7 +10,7 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
 
     precipitation_folder = ROOT_DIR / "dataset"
     with h5py.File(
-            precipitation_folder / "demo.h5",
+            precipitation_folder / "normalized.h5",
             "r",
     ) as orig_f:
         train_images = orig_f["train"]["images"]
@@ -91,5 +91,5 @@ def create_dataset(input_length: int, image_ahead: int, rain_amount_thresh: floa
 if __name__ == "__main__":
     rain_amount_thresh = {0.0, 0.05, 0.1}
     for rain_thresh in rain_amount_thresh:
-        create_dataset(6, 3, rain_thresh)
+        create_dataset(12, 6, rain_thresh)
         print(f"Dataset with rain threshold {rain_thresh} created.")

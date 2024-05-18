@@ -13,10 +13,11 @@ class DepthToSpace(nn.Module):
     # The forward method reshapes and rearranges the tensor.
     def forward(self, x):
         N, C, H, W = x.size()
-        x = x.view(N, self.bs, self.bs, C // (self.bs**2), H, W)  # (N, bs, bs, C//bs^2, H, W)
+        x = x.view(N, self.bs, self.bs, C // (self.bs ** 2), H, W)  # (N, bs, bs, C//bs^2, H, W)
         x = x.permute(0, 3, 4, 1, 5, 2).contiguous()  # (N, C//bs^2, H, bs, W, bs)
-        x = x.view(N, C // (self.bs**2), H * self.bs, W * self.bs)  # (N, C//bs^2, H * bs, W * bs)
+        x = x.view(N, C // (self.bs ** 2), H * self.bs, W * self.bs)  # (N, C//bs^2, H * bs, W * bs)
         return x
+
 
 # The SpaceToDepth class is a PyTorch module that rearranges blocks of spatial data into depth.
 class SpaceToDepth(nn.Module):
@@ -29,8 +30,9 @@ class SpaceToDepth(nn.Module):
         N, C, H, W = x.size()
         x = x.view(N, C, H // self.bs, self.bs, W // self.bs, self.bs)  # (N, C, H//bs, bs, W//bs, bs)
         x = x.permute(0, 3, 5, 1, 2, 4).contiguous()  # (N, bs, bs, C, H//bs, W//bs)
-        x = x.view(N, C * (self.bs**2), H // self.bs, W // self.bs)  # (N, C*bs^2, H//bs, W//bs)
+        x = x.view(N, C * (self.bs ** 2), H // self.bs, W // self.bs)  # (N, C*bs^2, H//bs, W//bs)
         return x
+
 
 # The DepthwiseSeparableConv class is a type of convolutional layer that performs a depthwise convolution followed by a pointwise convolution.
 class DepthwiseSeparableConv(nn.Module):
@@ -51,6 +53,7 @@ class DepthwiseSeparableConv(nn.Module):
         x = self.pointwise(x)
         return x
 
+
 # The DoubleDense class is a simple feed-forward network with two hidden layers.
 class DoubleDense(nn.Module):
     def __init__(self, in_channels, hidden_neurons, output_channels):
@@ -65,6 +68,7 @@ class DoubleDense(nn.Module):
         out = F.relu(self.dense2(out))
         out = self.dense3(out)
         return out
+
 
 # The DoubleDSConv class applies two depthwise separable convolutions in sequence, each followed by batch normalization and a ReLU activation function.
 class DoubleDSConv(nn.Module):
@@ -82,6 +86,7 @@ class DoubleDSConv(nn.Module):
     # The forward method applies the sequence of operations defined in the constructor.
     def forward(self, x):
         return self.double_ds_conv(x)
+
 
 # The ChannelAttention class computes attention weights for each channel of the input.
 class ChannelAttention(nn.Module):
@@ -105,6 +110,7 @@ class ChannelAttention(nn.Module):
         scale = x * torch.sigmoid(out).unsqueeze(2).unsqueeze(3).expand_as(x)
         return scale
 
+
 # The SpatialAttention class computes attention weights for each spatial location.
 class SpatialAttention(nn.Module):
     def __init__(self, kernel_size=7):
@@ -123,6 +129,7 @@ class SpatialAttention(nn.Module):
         out = self.bn(out)
         scale = x * torch.sigmoid(out)
         return scale
+
 
 # The CBAM class combines channel and spatial attention.
 class CBAM(nn.Module):

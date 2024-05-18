@@ -1,4 +1,5 @@
 """ Parts of the U-Net model """
+
 # Base model taken from: https://github.com/milesial/Pytorch-UNet
 import torch
 import torch.nn as nn
@@ -7,10 +8,7 @@ from models.layers import DepthwiseSeparableConv
 
 
 class DoubleConvDS(nn.Module):
-    """
-    A module that performs two consecutive depthwise separable convolution operations, 
-    each followed by batch normalization and a ReLU activation function.
-    """
+    """(convolution => [BN] => ReLU) * 2"""
 
     def __init__(self, in_channels, out_channels, mid_channels=None, kernels_per_layer=1):
         super().__init__()
@@ -38,16 +36,11 @@ class DoubleConvDS(nn.Module):
         )
 
     def forward(self, x):
-        """
-        Forward pass of the DoubleConvDS module.
-        """
         return self.double_conv(x)
 
 
 class DownDS(nn.Module):
-    """
-    A module that performs downscaling with maxpool then double conv.
-    """
+    """Downscaling with maxpool then double conv"""
 
     def __init__(self, in_channels, out_channels, kernels_per_layer=1):
         super().__init__()
@@ -57,16 +50,11 @@ class DownDS(nn.Module):
         )
 
     def forward(self, x):
-        """
-        Forward pass of the DownDS module.
-        """
         return self.maxpool_conv(x)
 
 
 class UpDS(nn.Module):
-    """
-    A module that performs upscaling then double conv.
-    """
+    """Upscaling then double conv"""
 
     def __init__(self, in_channels, out_channels, bilinear=True, kernels_per_layer=1):
         super().__init__()
@@ -85,9 +73,6 @@ class UpDS(nn.Module):
             self.conv = DoubleConvDS(in_channels, out_channels, kernels_per_layer=kernels_per_layer)
 
     def forward(self, x1, x2):
-        """
-        Forward pass of the UpDS module.
-        """
         x1 = self.up(x1)
         # input is CHW
         diffY = x2.size()[2] - x1.size()[2]
@@ -102,16 +87,9 @@ class UpDS(nn.Module):
 
 
 class OutConv(nn.Module):
-    """
-    A module that performs a simple convolution operation with a kernel size of 1.
-    """
-
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1)
 
     def forward(self, x):
-        """
-        Forward pass of the OutConv module.
-        """
         return self.conv(x)

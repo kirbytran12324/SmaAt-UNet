@@ -5,14 +5,7 @@ from models.regression_lightning import Precip_regression_base
 
 
 class UNet(Precip_regression_base):
-    """
-    Standard U-Net model for semantic segmentation tasks.
-    """
-
     def __init__(self, hparams):
-        """
-        Initialize the U-Net model with the given hyperparameters.
-        """
         super().__init__(hparams=hparams)
         self.n_channels = self.hparams.n_channels
         self.n_classes = self.hparams.n_classes
@@ -32,9 +25,6 @@ class UNet(Precip_regression_base):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
-        """
-        Forward pass of the U-Net model.
-        """
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -49,14 +39,7 @@ class UNet(Precip_regression_base):
 
 
 class UNet_Attention(Precip_regression_base):
-    """
-    U-Net model with Convolutional Block Attention Modules (CBAMs) for semantic segmentation tasks.
-    """
-
     def __init__(self, hparams):
-        """
-        Initialize the U-Net model with CBAMs with the given hyperparameters.
-        """
         super().__init__(hparams=hparams)
         self.n_channels = self.hparams.n_channels
         self.n_classes = self.hparams.n_classes
@@ -82,9 +65,6 @@ class UNet_Attention(Precip_regression_base):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
-        """
-        Forward pass of the U-Net model with CBAMs.
-        """
         x1 = self.inc(x)
         x1Att = self.cbam1(x1)
         x2 = self.down1(x1)
@@ -104,14 +84,7 @@ class UNet_Attention(Precip_regression_base):
 
 
 class UNetDS(Precip_regression_base):
-    """
-    U-Net model with depthwise separable convolutions for semantic segmentation tasks.
-    """
-
     def __init__(self, hparams):
-        """
-        Initialize the U-Net model with depthwise separable convolutions with the given hyperparameters.
-        """
         super().__init__(hparams=hparams)
         self.n_channels = self.hparams.n_channels
         self.n_classes = self.hparams.n_classes
@@ -132,9 +105,6 @@ class UNetDS(Precip_regression_base):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
-        """
-        Forward pass of the U-Net model with depthwise separable convolutions.
-        """
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -149,15 +119,7 @@ class UNetDS(Precip_regression_base):
 
 
 class UNetDS_Attention(Precip_regression_base):
-    """
-    U-Net model with depthwise separable convolutions and Convolutional Block Attention Modules (CBAMs) for semantic
-    segmentation tasks.
-    """
-
     def __init__(self, hparams):
-        """
-        Initialize the U-Net model with depthwise separable convolutions and CBAMs with the given hyperparameters.
-        """
         super().__init__(hparams=hparams)
         self.n_channels = self.hparams.n_channels
         self.n_classes = self.hparams.n_classes
@@ -184,9 +146,6 @@ class UNetDS_Attention(Precip_regression_base):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
-        """
-        Forward pass of the U-Net model with depthwise separable convolutions and CBAMs.
-        """
         x1 = self.inc(x)
         x1Att = self.cbam1(x1)
         x2 = self.down1(x1)
@@ -206,15 +165,7 @@ class UNetDS_Attention(Precip_regression_base):
 
 
 class UNetDS_Attention_4CBAMs(Precip_regression_base):
-    """
-    U-Net model with depthwise separable convolutions and four Convolutional Block Attention Modules (CBAMs) for
-    semantic segmentation tasks.
-    """
-
     def __init__(self, hparams):
-        """
-        Initialize the U-Net model with depthwise separable convolutions and four CBAMs with the given hyperparameters.
-        """
         super().__init__(hparams=hparams)
         self.n_channels = self.hparams.n_channels
         self.n_classes = self.hparams.n_classes
@@ -240,9 +191,6 @@ class UNetDS_Attention_4CBAMs(Precip_regression_base):
         self.outc = OutConv(64, self.n_classes)
 
     def forward(self, x):
-        """
-        Forward pass of the U-Net model with depthwise separable convolutions and four CBAMs.
-        """
         x1 = self.inc(x)
         x1Att = self.cbam1(x1)
         x2 = self.down1(x1)

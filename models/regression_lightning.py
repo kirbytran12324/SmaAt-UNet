@@ -78,7 +78,7 @@ class UNet_base(pl.LightningModule):
         x, y = batch
         y_pred = self(x)
         loss = self.loss_func(y_pred.squeeze(), y)
-        factor = 47.83
+        factor = 260.0
         loss_denorm = self.loss_func(y_pred.squeeze() * factor, y * factor)
         self.log("MSE", loss)
         self.log("MSE_denormalized", loss_denorm)
