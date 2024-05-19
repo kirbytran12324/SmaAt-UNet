@@ -3,7 +3,7 @@ Code for the Paper "SmaAt-UNet: Precipitation Nowcasting using a Small Attention
 
 ![SmaAt-UNet](SmaAt-UNet.png)
 
-The proposed SmaAt-UNet can be found in the model-folder under [SmaAt_UNet](models/SmaAt_UNet.py).
+The proposed SmaAt-UNet can be found in the model-folder under [SmaAt_UNet](models/SmaAt_UNet.py) (Not Included in the current project due to time constrains, will be modified and re-included in the future).
 
 **>>>IMPORTANT<<<**
 
@@ -41,7 +41,6 @@ For the paper we used the [Lightning](https://github.com/Lightning-AI/lightning)
 In order to use PL we created the model [UNetDS_Attention](models/unet_precip_regression_lightning.py) whose parent inherits from the pl.LightningModule. This model is the same as the pure PyTorch SmaAt-UNet implementation with the added PL functions.
 
 ### Training
-An example [training script](train_SmaAtUNet.py) is given for a classification task (PascalVOC).
 
 For training on the precipitation task we used the [train_precip_lightning.py](train_precip_lightning.py) file.
 The training will place a checkpoint file for every model in the `default_save_path` `lightning/precip_regression`.
@@ -54,22 +53,13 @@ The results will get saved in a json in the same folder as the models.
 The metrics of the persistence model (for now) are only calculated using the script [test_precip_lightning.py](test_precip_lightning.py). This script will also use all models in that folder and calculate the test-losses for the models in addition to the persistence model.
 It will get handled by [this issue](https://github.com/HansBambel/SmaAt-UNet/issues/28).
 
-### Plots
-Example code for creating similar plots as in the paper can be found in [plot_examples.ipynb](plot_examples.ipynb).
-
 ### Precipitation dataset
-The dataset consists of precipitation maps in 5-minute intervals from 2016-2019 resulting in about 420,000 images.
+The dataset consists of precipitation maps in 1-hour intervals consiting of Precipitation data in April and October of 2019 and 2020 in Northern Central Vietnam hich is the peak monsoon season.
 
-The dataset is based on radar precipitation maps from the [The Royal Netherlands Meteorological Institute (KNMI)](https://www.knmi.nl/over-het-knmi/about).
-The original images were cropped as can be seen in the example below:
-![Precip cutout](Precipitation%20map%20Cutout.png)
-
-If you are interested in the dataset that we used please write an e-mail to: k.trebing@alumni.maastrichtuniversity.nl and s.mehrkanoon@uu.nl
-
-The 50% dataset has 4GB in size and the 20% dataset has 16.5GB in size. Use the [create_dataset.py](create_datasets.py) to create the two datasets used from the original dataset.
+Use the [create_dataset.py](create_datasets.py) to create the two datasets used from the original dataset.
 
 The dataset is already normalized using a [Min-Max normalization](https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)).
-In order to revert this you need to multiply the images by 47.83; this results in the images showing the mm/5min.
+In order to revert this you need to multiply the images by 260.0; this results in the images showing the mm/h.
 
 ### Citation
 ```
