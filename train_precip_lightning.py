@@ -25,6 +25,8 @@ def train_regression(hparams, find_batch_size_automatically: bool = False):
         net = unet_regr.UNet(hparams=hparams)
     elif hparams.model == "UNetDS":
         net = unet_regr.UNetDS(hparams=hparams)
+    elif hparams.model == "UNetDS_4Attention":
+        net = unet_regr.UNetDS_Attention_4CBAMs(hparams=hparams)
     else:
         raise NotImplementedError(f"Model '{hparams.model}' not implemented")
 
@@ -79,7 +81,7 @@ if __name__ == "__main__":
     # Set up several arguments such as --dataset_folder, --batch_size, --learning_rate, and --epochs
     parser.add_argument(
         "--dataset_folder",
-        default=ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_0.h5",
+        default=ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_5.h5",
         type=str,
     )
     parser.add_argument("--batch_size", type=int, default=12)
@@ -101,7 +103,7 @@ if __name__ == "__main__":
     args.kernels_per_layer = 2
     args.use_oversampled_dataset = True
     args.dataset_folder = (
-            ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_0.h5"
+            ROOT_DIR / "dataset" / "train_test_input-length_12_image-ahead_6_rain-threshold_5.h5"
     )
     # args.resume_from_checkpoint = f"lightning/precip_regression/{args.model}/UNetDS_Attention.ckpt"
 

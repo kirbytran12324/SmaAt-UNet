@@ -25,6 +25,7 @@ def replace_inf_with_finite_image(image):
     image[np.isneginf(image)] = min_finite
     return image
 
+
 def normalize_image(image):
     """Divide all finite values in the image by 260.0."""
     finite_mask = np.isfinite(image)
