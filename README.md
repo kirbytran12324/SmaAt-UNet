@@ -56,6 +56,8 @@ It will get handled by [this issue](https://github.com/HansBambel/SmaAt-UNet/iss
 ### Precipitation dataset
 The dataset consists of precipitation maps in 1-hour intervals consiting of Precipitation data in April and October of 2019 and 2020 in Northern Central Vietnam hich is the peak monsoon season.
 
+Use the [tiff_to_h5.py](tiff_to_h5.py) to compile the dataset into a single h5 file with preprocessing
+
 Use the [create_dataset.py](create_datasets.py) to create the two datasets used from the original dataset.
 
 The dataset is already normalized using a [Min-Max normalization](https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)).
